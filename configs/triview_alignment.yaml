@@ -1,0 +1,70 @@
+data:
+  # Physiological view: WESAD
+  wesad_root: /data/Datasets/SenseVoice/wesad-full-dataset/versions/2/WESAD
+  wesad_cache_dir: cache/wesad_tensors
+  rebuild_cache: false
+  channels: [ACC_x, ACC_y, ACC_z, ECG, EDA, EMG, Resp, Temp]
+  source_hz: 700
+  target_hz: 32
+  window_seconds: 30
+  stride_seconds: 15
+  min_label_fraction: 0.8
+
+  # Audio view: IEMOCAP or generic manifest
+  dataset_format: iemocap
+  iemocap_root: /data/Datasets/SenseVoice/IEMOCAP_full_release
+  audio_manifest: data/iemocap_manifest.csv
+  prepare_manifest: true
+  force_rebuild_manifest: false
+  iemocap_split_strategy: session5_test
+  iemocap_include_original_labels: [neu, hap, exc, ang, sad, fru]
+  audio_include_labels: [neutral, stress, happy, sad, angry]
+  sample_rate: 16000
+  clip_seconds: 6.0
+
+  # Facial expression view: generic CSV manifest
+  enable_face: true
+  face_manifest: data/face_manifest.csv
+  image_size: 112
+  face_train_corruption:
+    blur_prob: 0.10
+    blur_radius: 1.2
+    gaussian_noise_std: 0.01
+
+model:
+  embedding_dim: 256
+  hidden_dim: 128
+  dropout: 0.2
+  fusion_heads: 4
+
+init:
+  physio_checkpoint: runs/wesad_physio/best_ok.pt
+  audio_checkpoint: runs/audio_pretrain/best_ok.pt
+  face_checkpoint: runs/face_pretrain/best_ok.pt
+
+train:
+  out: runs/triview_alignment
+  epochs: 100
+  batch_size: 2
+  num_workers: 0
+  prefetch_factor: 4
+  lr: 0.0001
+  weight_decay: 0.01
+  amp_dtype: bf16
+  compile: false
+  seed: 2026
+
+loss:
+  ce_weight: 0.5
+  prototype_weight: 0.3
+  contrastive_weight: 0.2
+  ot_weight: 0.05
+  ot_epsilon: 0.05
+  ot_iters: 40
+  mmd_weight: 0.05
+  dynamics_weight: 0.01
+  fusion_ce_weight: 1.0
+  reliability_weight: 0.01
+  temperature: 0.07
+  max_class_weight: 5.0
+  label_smoothing: 0.03

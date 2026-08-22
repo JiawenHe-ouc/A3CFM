@@ -1,0 +1,42 @@
+# Stage 1: WESAD physiological pretraining.
+# Replace dataset path here if you move or replace WESAD.
+data:
+  wesad_root: /data/Datasets/SenseVoice/wesad-full-dataset/versions/2/WESAD
+  cache_dir: cache/wesad_tensors
+  rebuild_cache: false
+  channels: [ACC_x, ACC_y, ACC_z, ECG, EDA, EMG, Resp, Temp]
+  source_hz: 700
+  target_hz: 32
+  window_seconds: 30
+  stride_seconds: 15
+  min_label_fraction: 0.8
+  # For a fixed subject-independent split, uncomment and edit:
+  # train_subjects: [S2, S3, S4, S5, S6, S7, S8, S9]
+  # val_subjects: [S10, S11]
+  # test_subjects: [S13, S14]
+
+model:
+  embedding_dim: 256
+  hidden_dim: 128
+  dropout: 0.3
+  fusion_heads: 4
+
+loss:
+  ce_weight: 1.0
+  prototype_weight: 0.2
+  temperature: 0.07
+  max_class_weight: 5.0
+  label_smoothing: 0.03
+
+train:
+  out: runs/wesad_physio
+  epochs: 50
+  batch_size: 16
+  num_workers: 8
+  prefetch_factor: 4
+  lr: 0.0003
+  weight_decay: 0.01
+  amp_dtype: bf16
+  compile: false
+  seed: 2026
+  save_best_metric: macro_f1

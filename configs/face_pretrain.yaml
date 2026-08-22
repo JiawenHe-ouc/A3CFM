@@ -1,0 +1,54 @@
+data:
+  # CSV columns: path,label,split[,subject_id,dataset]
+  face_manifest: data/face_manifest.csv
+  # image_size: 112
+  image_size: 224
+  auto_split: false
+  split_manifest: data/face_manifest_split.csv
+  train_corruption:
+    blur_prob: 0.10
+    blur_radius: 1.2
+    gaussian_noise_std: 0.01
+
+model:
+  embedding_dim: 256
+  hidden_dim: 128
+  dropout: 0.3
+  lora_rank: 8
+  physio_channels_placeholder: 8
+
+train:
+  out: runs/face_pretrain
+  epochs: 50
+  batch_size: 32
+  num_workers: 8
+  prefetch_factor: 4
+  lr: 1e-4
+  weight_decay: 0.01
+  amp_dtype: fp16
+  compile: true
+  seed: 2026
+  warmup_ratio: 0.05
+  grad_accum_steps: 1
+
+# 简单损失
+loss:
+  ce_weight: 1.0
+  prototype_weight: 0
+  supcon_weight: 0
+  hier_weight: 0
+
+data_augmentation:
+  random_resized_crop_scale: 0.8
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+  random_erasing_prob: 0.2
+
+# loss:
+#   ce_weight: 1.0
+#   prototype_weight: 0.2
+#   temperature: 0.07
+#   supcon_weight: 0.5     
+#   hier_weight: 0.1      

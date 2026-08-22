@@ -1,0 +1,70 @@
+# Stage 2: audio emotion pretraining with IEMOCAP support.
+# IEMOCAP structure expected by the manifest builder:
+#   IEMOCAP_full_release/Session1/dialog/EmoEvaluation/*.txt
+#   IEMOCAP_full_release/Session1/sentences/wav/<dialog_id>/<utterance_id>.wav
+# Baidu intro uses the same conceptual structure: dialog/EmoEvaluation, Sentences, Transcriptions.
+
+data:
+  # Options: manifest | iemocap
+  dataset_format: iemocap
+
+  # CHANGE THIS when using your local IEMOCAP path.
+  iemocap_root: /data/Datasets/SenseVoice/IEMOCAP_full_release
+
+  # Generated CSV used by AudioEmotionDataset and train_audio.py.
+  audio_manifest: data/iemocap_manifest.csv
+  prepare_manifest: true
+  force_rebuild_manifest: false
+
+  # Session-independent default: Session1-3 train, Session4 val, Session5 test.
+  iemocap_split_strategy: session5_test
+
+  # Keep IEMOCAP categories with enough support for stable pretraining.
+  # fru -> stress, exc -> happy, neu -> neutral.
+  iemocap_include_original_labels: [neu, hap, exc, ang, sad, fru]
+  audio_include_labels: [neutral, happy, sad, angry]
+  skip_missing_wav: true
+
+  # If your manifest has no split column and dataset_format=manifest, set auto_split=true.
+  auto_split: false
+  split_manifest: data/audio_manifest_split.csv
+
+  sample_rate: 16000
+  clip_seconds: 4
+
+model:
+  embedding_dim: 256
+  hidden_dim: 128
+  dropout: 0.3
+  fusion_heads: 4
+  physio_channels_placeholder: 8
+  use_mel: true
+  n_mels: 64
+  wavlm_name: "/home/ubuntu/OUC/Project/SenseVoice/wavlm-base-plus"
+
+loss:
+  # ce_weight: 0.8
+  # prototype_weight: 0.0
+  # temperature: 0.07
+  # max_class_weight: 4.0
+  label_smoothing: 0.1
+
+train:
+  out: runs/audio_pretrain
+  epochs: 50
+  batch_size: 16
+  num_workers: 8
+  prefetch_factor: 4
+  lr: 3e-5
+  weight_decay: 0.01
+  amp_dtype: none
+  compile: false
+  seed: 2026
+  warmup_classifier_epochs: 2
+  classifier_lr_multiplier: 1.0
+  init_classifier_bias: true
+  prior_smoothing: 1.0
+  prior_logit_min: -2.0
+  prior_logit_max: 2.0
+  use_class_balanced_sampler: true
+  debug_data: true

@@ -1,0 +1,28 @@
+paths:
+  sense_voice_path: ../iic/SenseVoiceSmall
+  embed_model_path: ../iic/paraphrase-multilingual-MiniLM-L12-v2
+  llama_model_path: ../meta-llama/llava-llama-3-8b
+  chroma_db_path: ../maritime_chroma_db
+  custom_docs_dir: ../maritime_docs
+  base_knowledge_json: ../baseKnowledge.json
+
+inference:
+  checkpoint: runs/triview_alignment/best.pt
+  fallback_checkpoints:
+    - runs/triview_alignment/best.pt
+    - runs/unpaired_alignment/best.pt
+    - runs/audio_pretrain/best.pt
+    - runs/face_pretrain/best.pt
+    - runs/physio_pretrain/best.pt
+  sample_rate: 16000
+  clip_seconds: 6.0
+  image_size: 112
+  rag_top_k: 4
+
+app:
+  server_name: 0.0.0.0
+  server_port: 7860
+  share: false
+  offline: true
+  load_llama_4bit: true
+  allow_template_report_without_llama: true
