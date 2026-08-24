@@ -39,11 +39,16 @@ pip install -r requirements.txt
 </code>
 
 ## Data Preparation
-Physio dataset: WESAD、UBFC-Phys</br>
-Audio dataset: IEMOCAP
-MELD</br>
-Image dataset: AffectNet
-RAF-DB</br>
+Physio dataset: </br>
+WESAD https://ubi29.informatik.uni-siegen.de/usi/data_wesad.html</br>
+UBFC-Phys https://ieee-dataport.org/open-access/ubfc-phys-2</br>
+
+Audio dataset: </br>
+IEMOCAP https://sail.usc.edu/iemocap/iemocap_release.htm</br>
+MELD https://affective-meld.github.io/</br>
+Image dataset:</br>
+AffectNet https://mohammadmahoor.com/pages/databases/affectnet/</br>
+RAF-DB http://whdeng.cn/RAF/model1.html</br>
 
 ## Training
 pretrain files:
